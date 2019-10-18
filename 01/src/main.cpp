@@ -23,12 +23,11 @@ int isCharIsSign(char c)
 		return 0;
 }
 
-stack get_num(std::string s,stack* r)
+stack get_num(const std::string &s,stack* r)
 {
 	stack res;
 	res.sign = '0';
 	int lr = 0;
-	int maxl = 1000;
 	double c = 0;
 	int cnum = 0;
 	double unarminus = 1;
@@ -65,16 +64,11 @@ stack get_num(std::string s,stack* r)
 						r[lr].num = c * unarminus;
 						r[lr].sign = '1';
 						lr++;
-						if (lr < maxl)
-						{
+						
 							c = 0;
 							cnum = 0;
 							unarminus = 1;
-						} else
-						{
-							res.sign = 'l';
-							break;
-						}
+						
 					}
 					else
 						if (s[i] == '-' && unarminus == 1)
@@ -90,14 +84,6 @@ stack get_num(std::string s,stack* r)
 					{
 						r[lr].sign = s[i];
 						lr++;
-						if (lr < maxl)
-						{
-						}
-						else
-						{
-							res.sign = 'l';
-							break;
-						}
 					}
 				}
 				else
@@ -249,10 +235,10 @@ double calc(stack* pol,int lr)
 	return st[0].num;
 }
 
-stack get_res(std::string pr) {
+stack get_res(const std::string &pr) {
 
 	//create stack of operations	
-	stack r[1000];
+	stack* r = (stack*) malloc(size(pr)*sizeof(stack));
 	stack res;
 	stack error = get_num(pr,r);
 	int lr = error.num;
