@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+#include <stack>
+#include <deque>
 
-struct stack
+struct myStack
 {
 	double num;
 	char sign;
@@ -23,9 +25,10 @@ int isCharIsSign(char c)
 		return 0;
 }
 
-stack get_num(const std::string &s,stack* r)
+myStack get_num(const std::string &s, std::deque <myStack>* r)
 {
-	stack res;
+	myStack res;
+	myStack item;
 	res.sign = '0';
 	int lr = 0;
 	double c = 0;
@@ -61,13 +64,14 @@ stack get_num(const std::string &s,stack* r)
 					point = 0;
 					if (cnum)
 					{
-						r[lr].num = c * unarminus;
-						r[lr].sign = '1';
-						lr++;
-						
-							c = 0;
-							cnum = 0;
-							unarminus = 1;
+
+						item.num = c * unarminus;
+						item.sign = '1';
+						r->push_back(item);
+
+						c = 0;
+						cnum = 0;
+						unarminus = 1;
 						
 					}
 					else
@@ -82,8 +86,9 @@ stack get_num(const std::string &s,stack* r)
 						}
 					if (unarminus != -1)
 					{
-						r[lr].sign = s[i];
-						lr++;
+						item.sign = s[i];
+						item.num = 0;
+						r->push_back(item);
 					}
 				}
 				else
@@ -98,158 +103,153 @@ stack get_num(const std::string &s,stack* r)
 	}
 	if (cnum)
 	{
-		r[lr].num = c * unarminus;
-		r[lr].sign = '1';
+		item.num = c * unarminus;
+		item.sign = '1';
+		r->push_back(item);
+
 
 	}
 	res.num = lr;
 	return res;
 }
 
-void trans(stack* r, int lr)
+void trans(std::deque <myStack>* r)
 {
-	stack teh[2];
-	int lteh = -1;
-	int lp = 0;
-
-	for (int i = 1; i <= lr; i++)
+	std::stack <myStack> teh;
+	int lp = r->size();
+	myStack item;
+	for(int i = 0;i<lp;i++)
 	{
-		switch (r[i].sign)
+		item = r->front();
+		r->pop_front();
+		switch (item.sign)
 		{
 		case '+':
 		case '-':
-			if (lteh == -1)
+			if (teh.empty())
 			{
-				lteh++;
-				teh[lteh].sign = r[i].sign;
-				teh[lteh].num = r[i].num;
+				teh.push(item);
 			}
 			else
-				if (teh[lteh].sign == '+' || teh[lteh].sign == '-')
+			
+				if (teh.top().sign == '+' || teh.top().sign == '-')//teh.top
 				{
-					lp++;
-					r[lp].sign = teh[lteh].sign;
-					r[lp].num = teh[lteh].num;
+					r->push_back(teh.top());
+					teh.pop();
+					teh.push(item);
 
-					teh[lteh].sign = r[i].sign;
-					teh[lteh].num = r[i].num;
 				}
 				else
-					if (teh[lteh].sign == '*' || teh[lteh].sign == '/')
+					if (teh.top().sign == '*' || teh.top().sign == '/')
 					{
-						lp++;
-						r[lp].sign = teh[lteh].sign;
-						r[lp].num = teh[lteh].num;
-						lteh--;
-						if (lteh > -1)
+						r->push_back(teh.top());
+						teh.pop();
+
+						if (! teh.empty())
 						{
-							lp++;
-							r[lp].sign = teh[lteh].sign;
-							r[lp].num = teh[lteh].num;
-							lteh--;
+							r->push_back(teh.top());
+							teh.pop();
+							
 						}
-						lteh++;
-						teh[lteh].sign = r[i].sign;
-						teh[lteh].num = r[i].num;
+						teh.push(item);
 					}
-			break;
+		break;
 
 		case '1':
-			lp++;
-			r[lp].sign = r[i].sign;
-			r[lp].num = r[i].num;
-			if (i == lr)
+			r->push_back(item);
+			if (i == lp-1)
 			{
-				while (lteh > -1)
+				while (! teh.empty())
 				{
-					lp++;
-					r[lp].sign = teh[lteh].sign;
-					r[lp].num = teh[lteh].num;
-					lteh--;
+					r->push_back(teh.top());
+					teh.pop();
 				}
 			}
 			break;
 
 		case '/':
 		case '*':
-			if (lteh == -1 || teh[lteh].sign == '+' || teh[lteh].sign == '-')
+			if (teh.empty() || teh.top().sign == '+' || teh.top().sign == '-')
 			{
-				lteh++;
-				teh[lteh].sign = r[i].sign;
-				teh[lteh].num = r[i].num;
+				teh.push(item);
 
 			}
 			else
-				if (teh[lteh].sign == '*' || teh[lteh].sign == '/')
+				if (teh.top().sign == '*' || teh.top().sign == '/')
 				{
-					lp++;
-					r[lp].sign = teh[lteh].sign;
-					r[lp].num = teh[lteh].num;
-
-					teh[lteh].sign = r[i].sign;
-					teh[lteh].num = r[i].num;
+					r->push_back(teh.top());
+					teh.pop();
+					teh.push(item);
 				}
 			break;
 		}
 	}
 }
 
-double calc(stack* pol,int lr)
+double calc(std::deque <myStack>* pol)
 {	
 
-	stack st[1000];
+	std::stack <myStack> st;
 	int lst = 0;
-	st[lst].sign = pol[0].sign;
-	st[lst].num = pol[0].num;
 
-	for (int i = 1; i <= lr; i++)
+	myStack item = pol->front();
+	pol->pop_front();
+	st.push(item);
+
+	while(pol->size() > 0)
 	{
+		item = pol->front();
+		pol->pop_front();
 
-		if (pol[i].sign == '1')
+		if (item.sign == '1')
 		{
-			lst++;
-			st[lst].sign = pol[i].sign;
-			st[lst].num = pol[i].num;
+			st.push(item);
 		}
 		else
 		{
-			lst--;
-			st[lst].sign = '1';
-			switch (pol[i].sign)
+			myStack b = st.top();
+			st.pop();
+			myStack a = st.top();
+			st.pop();
+			switch (item.sign)
 			{
 			case '+':
-				st[lst].num = st[lst].num + st[lst + 1].num;
+				a.num += b.num;
+				st.push(a);
 				break;
 			case '-':
-				st[lst].num = st[lst].num - st[lst + 1].num;
+				a.num -= b.num;
+				st.push(a);
 				break;
 			case '*':
-				st[lst].num = st[lst].num*st[lst + 1].num;
+				a.num *= b.num;
+				st.push(a);
 				break;
 			case '/':
-				st[lst].num = st[lst].num / st[lst + 1].num;
+				a.num /= b.num;
+				st.push(a);
 				break;
 			}
 		}
 	}
-	return st[0].num;
+	return st.top().num;
 }
 
-stack get_res(const std::string &pr) {
+myStack get_res(const std::string &pr) {
 
-	//create stack of operations	
-	stack* r = (stack*) malloc(size(pr)*sizeof(stack));
-	stack res;
-	stack error = get_num(pr,r);
-	int lr = error.num;
+	//create myStack of operations	
+	//myStack* r = (myStack*) malloc(size(pr)*sizeof(myStack));
+	std::deque <myStack> r;
+	myStack res;
+	myStack error = get_num(pr,&r);
 	
 	if (error.sign == '0')
 	{
 		//translate to reverse polish notation
-		trans(r,lr);
+		trans(&r);
 		//calc res
 		res.sign = '0';
-		res.num = calc(r, lr);
+		res.num = calc(&r);
 	}
 	else
 	{
@@ -273,7 +273,7 @@ int main() {
 	getline(std::cin, pr);
 
 	//result
-	stack res;
+	myStack res;
 
 	//use calc command
 	if (calc_command == "calc")
