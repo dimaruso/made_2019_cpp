@@ -1,18 +1,16 @@
 CC=g++
-  
-all: Myallocator
 
+all: test
 
-Myallocator: main.o 
-    $(CC) -o Myallocator main.o
+test: test.o Myallocator.o
+	$(CC) -o test test.o Myallocator.o
+	./test
 
-main.o: main.cpp
-    $(CC) -c main.cpp
+Myallocator.o: Myallocator.cpp
+	$(CC) -c Myallocator.cpp
 
-test: main.o
-	$(CC) -o Myallocator main.o
-	python pythonTest.py
-
+test.o: test.cpp Myallocator.cpp
+	$(CC) -c test.cpp
 
 clean:
-    rm -rf *.o Myallocator
+	rm -rf *.o test
