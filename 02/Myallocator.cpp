@@ -61,11 +61,6 @@ char* LinearAllocator::alloc(size_t size)
 
 void LinearAllocator::reset()
 {
-	delete[] myBuffer;
-	
-	//free(myBuffer);
-
-	myBuffer = new char[totalSize];
-
+	currentSize = 0;
 }
 
