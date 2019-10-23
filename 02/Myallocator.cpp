@@ -3,7 +3,7 @@
 class LinearAllocator
 {
 public:
-	LinearAllocator();
+	//LinearAllocator();
 	LinearAllocator(size_t maxSize);
 	//~LinearAllocator();
 	char* alloc(size_t size);
@@ -23,13 +23,13 @@ void LinearAllocator::prin() {
 		std::cout << myBuffer[i] << " ";
 	std::cout << std::endl;
 };
-*/
+
 LinearAllocator::LinearAllocator() :
 	myBuffer(new char[8]),
 	totalSize(8),
 	currentSize(0)
 {	
-}
+}*/
 LinearAllocator::LinearAllocator(size_t maxSize):
 	myBuffer(new char[maxSize]),
 	totalSize(maxSize),
@@ -61,11 +61,11 @@ char* LinearAllocator::alloc(size_t size)
 
 void LinearAllocator::reset()
 {
-	//delete[] myBuffer;
+	delete[] myBuffer;
 	
-	free(myBuffer);
+	//free(myBuffer);
 
-	//myBuffer = new char[totalSize];
+	myBuffer = new char[totalSize];
 
 }
 
