@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 #include "TokenParser.cpp"
 
 int TokenIsNum(std::string &token)
