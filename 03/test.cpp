@@ -28,7 +28,7 @@ bool EndParse(int st)
 	std::cout << "EndParse " << !st << std::endl;
 	return st == 0;
 }
-using namespace MyParser;
+
 int main() {
 	
 	std::string pr;
