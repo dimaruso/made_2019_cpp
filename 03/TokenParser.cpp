@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <deque>
 
 namespace MyParser
 {
@@ -24,11 +23,10 @@ namespace MyParser
 	using callbackntoken = int(*) (std::string &token);
 	using callbackstoken = std::string(*) (std::string &token);
 
-	void find_token(const std::string &pr, const int len, std::deque <std::string>& r,
+	void find_token(const std::string &pr, const int len,
 		callback start, callback end, callbackntoken Ntoken, callbackstoken Stoken) {
 
 		std::string item = "";
-		//std::deque <std::string> r;
 		int ci = 1;
 		int i = 0;
 		start(i);
@@ -47,13 +45,11 @@ namespace MyParser
 			if (ci)
 			{
 				//token is num
-				r.push_back(item);
 				Ntoken(item);
 			}
 			else
 			{
 				//token is string
-				r.push_back(item);
 				Stoken(item);
 			}
 			ci = 1;
@@ -98,16 +94,8 @@ int main() {
 
 	getline(std::cin, pr);
 
-	std::deque <std::string> r;
+	find_token(pr,size(pr),StartParse,EndParse,TokenIsNum,TokenIsString);
 
-	find_token(pr,size(pr),r,StartParse,EndParse,TokenIsNum,TokenIsString);
-		/*
-	while (!r.empty())
-	{
-		std::cout << r.front() << std::endl;
-		r.pop_front();
-	}
-	*/
-	//system("pause");
+	system("pause");
 	return 0;
 }
