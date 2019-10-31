@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 
 int isCharIsNum(char c)
