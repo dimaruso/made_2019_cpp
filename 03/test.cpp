@@ -1,17 +1,19 @@
-#include <cassert>
 #include <iostream>
-#include "TokenParser.cpp"
+#include <string>
+#include <cassert>
+#include "TokenParser.h"
 
-int TokenIsNum(std::string &token)
+int TokenIsNum(const int &token)
 {
-	assert(token != "");
+	assert(&token != nullptr);
 	std::cout << token << std::endl;
-	return std::stoi(token);
+	return token;
 }
 
-std::string TokenIsString(std::string &token)
+std::string TokenIsString(const std::string &token)
 {
 	assert(token != "");
+	assert(&token != nullptr);
 	std::cout << token << std::endl;
 	return token;
 }
@@ -31,7 +33,7 @@ bool EndParse(int st)
 }
 
 int main() {
-	
+
 	std::string pr;
 	/*
 	//read input
@@ -50,9 +52,10 @@ int main() {
 	pr = "ilay8!$%\o3wr7ynqwoir		e928374oq c0234 nv2m34oim2u3c 4p2394872 mo;";
 	find_token(pr, size(pr), StartParse, EndParse, TokenIsNum, TokenIsString);
 
-	pr = "1\t3 23 2";
+	pr = "1\t3 23 2 0";
 	find_token(pr, size(pr), StartParse, EndParse, TokenIsNum, TokenIsString);
 
 	std::cout << "Test Success!" << std::endl;
+	system("pause");
 	return 0;
 }
