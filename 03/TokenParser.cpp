@@ -17,8 +17,8 @@ int isCharIsSign(char c)
 }
 
 using callback = bool(*) (int i);
-using callbackntoken = int(*) (std::string &token);
-using callbackstoken = std::string(*) (std::string &token);
+using callbackntoken = int(*) (const int &token);
+using callbackstoken = std::string(*) (const std::string &token);
 
 void find_token(const std::string &pr, const int len,
 	callback start, callback end, callbackntoken Ntoken, callbackstoken Stoken) {
@@ -29,20 +29,21 @@ void find_token(const std::string &pr, const int len,
 	start(i);
 	while (i < len)
 	{
+		while (i < len && isCharIsSign(pr[i])) ++i;
 
-		while (!isCharIsSign( pr[i]))
+		while (i< len && !isCharIsSign( pr[i]))
 		{
 			item += pr[i];
 			if (!(ci && isCharIsNum(pr[i])))
 				ci = 0;
 			i++;
 		}
-		//std::cout << item << std::endl;
+		if (item != "")
 
 		if (ci)
 		{
 			//token is num
-			Ntoken(item);
+			Ntoken(std::stoi(item));
 		}
 		else
 		{
@@ -51,7 +52,6 @@ void find_token(const std::string &pr, const int len,
 		}
 		ci = 1;
 		item = "";
-		while (i<len && isCharIsSign(pr[i])) ++i;
 	}
 	end(len - i);
 	return;
