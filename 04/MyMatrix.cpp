@@ -25,13 +25,13 @@ const size_t MyMatrix::getColumns() const
 
 const int* MyMatrix::operator[](size_t i) const
 {
-	if (i < cols * rows) return (data+(i*cols));
+	if (i < rows) return (data+(i*cols));
 	else
 		throw std::out_of_range("wrong index");
 }
 int* MyMatrix::operator[](size_t i)
 {
-	if (i < cols * rows) return(data + (i*cols));
+	if (i < rows) return(data + (i*cols));
 	else
 		throw std::out_of_range("wrong index");
 }
