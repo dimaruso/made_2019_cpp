@@ -3,33 +3,29 @@
 #include <cassert>
 #include "TokenParser.h"
 
-int TokenIsNum(const int &token)
+void TokenIsNum(const int &token)
 {
 	assert(&token != nullptr);
 	std::cout << token << std::endl;
-	return token;
 }
 
-std::string TokenIsString(const std::string &token)
+void TokenIsString(const std::string &token)
 {
 	assert(token != "");
 	assert(&token != nullptr);
 	std::cout << token << std::endl;
-	return token;
 }
 
-bool StartParse(int st)
+void StartParse(int st)
 {
 	assert(st == 0);
 	std::cout << "StartParse " << !st << std::endl;
-	return st == 0;
 }
 
-bool EndParse(int st)
+void EndParse(int st)
 {
 	assert(st == 0);
 	std::cout << "EndParse " << !st << std::endl;
-	return st == 0;
 }
 
 int main() {
@@ -56,6 +52,6 @@ int main() {
 	find_token(pr, size(pr), StartParse, EndParse, TokenIsNum, TokenIsString);
 
 	std::cout << "Test Success!" << std::endl;
-	system("pause");
+	//system("pause");
 	return 0;
 }
