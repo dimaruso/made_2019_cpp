@@ -1,5 +1,174 @@
 #include "MyBigInt.h"
 
+MyBigInt::MyBigInt(const size_t _size, const bool _sign, const int& len, const char* _data) :
+	size(_size),
+	sign(_sign),
+	data(new char[_size])
+{
+	for (size_t i = 0; i < len && i < _size; ++i)
+	{
+		data[i] = _data[i];
+	}
+	for (size_t i = len; i < _size; ++i)
+	{
+		data[i] = '0';
+	}
+}
+
+MyBigInt::MyBigInt() :
+	size(1),
+	sign(true),
+	data(new char[1]{ '0' })
+{
+}
+
+MyBigInt::MyBigInt(const int& _data)
+{
+	if (_data > 0)
+	{
+		std::string tmp = std::to_string(_data);
+		size = tmp.length();
+		data = new char[size];
+		for (int i = 0; i < size; ++i)
+		{
+			data[i] = tmp[size - 1 - i];
+		}
+		sign = true;
+	}
+	else if (_data < 0)
+	{
+		std::string tmp = std::to_string(-_data);
+		size = tmp.length();
+		data = new char[size];
+		for (int i = 0; i < size; ++i)
+		{
+			data[i] = tmp[size - 1 - i];
+		}
+		sign = false;
+	}
+	else
+	{
+		sign = true;
+		size = 1;
+		data = new char('0');
+	}
+}
+
+MyBigInt::MyBigInt(const MyBigInt& copied) :
+	size(copied.size),
+	sign(copied.sign),
+	data(new char[size])
+{
+	for (size_t i = 0; i < size; ++i)
+	{
+		data[i] = copied.data[i];
+	}
+}
+
+MyBigInt& MyBigInt::operator=(const MyBigInt& copied)
+{
+	size = copied.size;
+	sign = copied.sign;
+	if (data) delete[] data;
+	data = new char[size];
+	for (size_t i = 0; i < size; ++i)
+	{
+		data[i] = copied.data[i];
+	}
+	return *this;
+}
+
+MyBigInt::MyBigInt(MyBigInt&& moved) :
+	size(moved.size),
+	sign(moved.sign),
+	data(moved.data)
+{
+	moved.data = nullptr;
+	moved.size = 0;
+}
+
+MyBigInt& MyBigInt::operator=(MyBigInt&& moved)
+{
+
+	if (this == &moved)
+		return *this;
+	size = moved.size;
+	sign = moved.sign;
+	if (data) delete[] data;
+	data = moved.data;
+	moved.data = nullptr;
+	moved.size = 0;
+	return *this;
+}
+
+MyBigInt::~MyBigInt()
+{
+	if (data) delete[] data;
+	data = nullptr;
+	size = 0;
+}
+
+//print
+std::ostream& operator<<(std::ostream& out, const MyBigInt& printed)
+{
+	if (!printed.sign) out << '-';
+	for (int i = printed.size - 1; i >= 0; --i)
+		out << printed.data[i];
+	return out;
+}
+//scan
+std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
+{
+	delete[] NewBigInt.data;
+	std::string tmp;
+	in >> tmp;
+	NewBigInt.size = tmp.length();
+	if (tmp.length() > 0 && tmp[0] == '-')
+	{
+		NewBigInt.sign = false;
+		--NewBigInt.size;
+		NewBigInt.data = new char[NewBigInt.size];
+		for (int i = 0; i < NewBigInt.size; ++i)
+		{
+			if (tmp[NewBigInt.size - i] >= '0' && tmp[NewBigInt.size - i] <= '9')
+				NewBigInt.data[i] = tmp[NewBigInt.size - i];
+			else
+			{
+				delete[] NewBigInt.data;
+				NewBigInt.data = nullptr;
+				NewBigInt.size = 0;
+				break;
+			}
+		}
+	}
+	else if (tmp.length() > 0)
+	{
+		NewBigInt.sign = true;
+		NewBigInt.data = new char[NewBigInt.size];
+		for (int i = 0; i < NewBigInt.size; ++i)
+		{
+			if (tmp[NewBigInt.size - 1 - i] >= '0' && tmp[NewBigInt.size - 1 - i] <= '9')
+				NewBigInt.data[i] = tmp[NewBigInt.size - 1 - i];
+			else
+			{
+				delete[] NewBigInt.data;
+				NewBigInt.data = nullptr;
+				NewBigInt.size = 0;
+				break;
+			}
+		}
+	}
+	return in;
+}
+//unar -
+MyBigInt const MyBigInt::operator-() const
+{
+	MyBigInt tmp(*this);
+	if (tmp.data[tmp.size - 1] != '0') tmp.sign = !tmp.sign;
+	return tmp;
+}
+//////////////////////////////////////////////////
+//+
 const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 {
 	int k = 0;
@@ -23,7 +192,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				for (i = 0; i < tmp.size-1; ++i)
 					newdata[i] = tmp.data[i];
 				delete[] tmp.data;
-				tmp.data = std::move(newdata);
+				tmp.data = newdata;
 				--tmp.size;
 			}
 			return tmp;
@@ -67,7 +236,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 					newdata[i] = tmp.data[i];
 
 				delete[] tmp.data;
-				tmp.data = std::move(newdata);
+				tmp.data = newdata;
 			}
 			if (tmp.size == 1 && tmp.data[0] == '0')
 				tmp.sign = true;
@@ -94,7 +263,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				for (i = 0; i < tmp.size-1; ++i)
 					newdata[i] = tmp.data[i];
 				delete[] tmp.data;
-				tmp.data = std::move(newdata);
+				tmp.data = newdata;
 				--tmp.size;
 			}
 			return tmp;
@@ -140,7 +309,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 					for (i = 0; i < tmp.size; ++i)
 						newdata[i] = tmp.data[i];
 					delete[] tmp.data;
-					tmp.data = std::move(newdata);
+					tmp.data = newdata;
 				}
 				if (tmp.size == 1 && tmp.data[0] == '0')
 					tmp.sign = true;
@@ -185,7 +354,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 						newdata[i] = tmp.data[i];
 
 					delete[] tmp.data;
-					tmp.data = std::move(newdata);
+					tmp.data = newdata;
 				}
 				if (tmp.size == 1 && tmp.data[0] == '0')
 					tmp.sign = true;
@@ -202,7 +371,12 @@ const MyBigInt MyBigInt::operator+(const int& second) const
 	MyBigInt tmp(second);
 	return *this+tmp;
 }
-
+const MyBigInt operator+(const int& x, const MyBigInt& y)
+{
+	MyBigInt _x(x);
+	return _x + y;
+}
+//-
 const MyBigInt MyBigInt::operator-(const MyBigInt& second) const
 {
 	return *this+(-second);
@@ -212,7 +386,12 @@ const MyBigInt MyBigInt::operator-(const int& second) const
 	MyBigInt tmp(-second);
 	return *this+tmp;
 }
-
+const MyBigInt operator-(const int& x, const MyBigInt& y)
+{
+	MyBigInt _x(x);
+	return _x - y;
+}
+//==
 const bool MyBigInt::operator==(const MyBigInt& second) const
 {
 	if (this == &second)
@@ -229,7 +408,12 @@ const bool MyBigInt::operator==(const int& second) const
 	MyBigInt _second(second);
 	return (*this == _second);
 }
-
+const bool operator==(const int& x, const MyBigInt& y)
+{
+	MyBigInt _x(x);
+	return (_x == y);
+}
+//!=
 const bool MyBigInt::operator!=(const MyBigInt& second) const
 {
 	return !(*this == second);
@@ -238,7 +422,11 @@ const bool MyBigInt::operator!=(const int& second) const
 {
 	return !(*this == second);
 }
-
+const bool operator!=(const int& x, const MyBigInt& y)
+{
+	return !(x == y);
+}
+//<
 const bool MyBigInt::operator<(const MyBigInt& second) const
 {
 	if (sign != second.sign)
@@ -289,7 +477,12 @@ const bool MyBigInt::operator<(const int& second) const
 	MyBigInt _second(second);
 	return (*this < _second);
 }
-
+const bool operator<(const int& x, const MyBigInt& y)
+{
+	MyBigInt _x(x);
+	return (_x < y);
+}
+//<=
 const bool MyBigInt::operator<=(const MyBigInt& second) const
 {
 	if (sign != second.sign)
@@ -340,7 +533,12 @@ const bool MyBigInt::operator<=(const int& second) const
 	MyBigInt _second(second);
 	return (*this <= _second);
 }
-
+const bool operator<=(const int& x, const MyBigInt& y)
+{
+	MyBigInt _x(x);
+	return (_x <= y);
+}
+//>
 const bool MyBigInt::operator>(const MyBigInt& second) const
 {
 	return !(*this <= second);
@@ -349,7 +547,11 @@ const bool MyBigInt::operator>(const int& second) const
 {
 	return !(*this <= second);
 }
-
+const bool operator>(const int& x, const MyBigInt& y)
+{
+	return !(x <= y);
+}
+//>=
 const bool MyBigInt::operator>=(const MyBigInt& second) const
 {
 	return !(*this < second);
@@ -357,4 +559,8 @@ const bool MyBigInt::operator>=(const MyBigInt& second) const
 const bool MyBigInt::operator>=(const int& second) const
 {
 	return !(*this < second);
+}
+const bool operator>=(const int& x, const MyBigInt& y)
+{
+	return !(x < y);
 }
