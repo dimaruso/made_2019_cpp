@@ -29,7 +29,7 @@ MyBigInt::MyBigInt(const int& _data)
 		std::string tmp = std::to_string(_data);
 		size = tmp.length();
 		data = new char[size];
-		for (int i = 0; i < size; ++i)
+		for (size_t i = 0; i < size; ++i)
 		{
 			data[i] = tmp[size - 1 - i];
 		}
@@ -40,7 +40,7 @@ MyBigInt::MyBigInt(const int& _data)
 		std::string tmp = std::to_string(-_data);
 		size = tmp.length();
 		data = new char[size];
-		for (int i = 0; i < size; ++i)
+		for (size_t i = 0; i < size; ++i)
 		{
 			data[i] = tmp[size - 1 - i];
 		}
@@ -111,15 +111,20 @@ MyBigInt::~MyBigInt()
 //print
 std::ostream& operator<<(std::ostream& out, const MyBigInt& printed)
 {
-	if (!printed.sign) out << '-';
-	for (int i = printed.size - 1; i >= 0; --i)
-		out << printed.data[i];
+	if (printed.data && printed.size)
+	{
+		if (!printed.sign) out << '-';
+		for (size_t i = printed.size - 1; i > 0; --i)
+			out << printed.data[i];
+		out << printed.data[0];
+	}
 	return out;
 }
 //scan
 std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 {
-	delete[] NewBigInt.data;
+	if(NewBigInt.data) delete[] NewBigInt.data;
+	NewBigInt.data = nullptr;
 	std::string tmp;
 	in >> tmp;
 	NewBigInt.size = tmp.length();
@@ -127,14 +132,14 @@ std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 	{
 		NewBigInt.sign = false;
 		--NewBigInt.size;
-		NewBigInt.data = new char[NewBigInt.size];
-		for (int i = 0; i < NewBigInt.size; ++i)
+		NewBigInt.data = new char[NewBigInt.size];	
+		for (size_t i = 0; i < NewBigInt.size; ++i)
 		{
 			if (tmp[NewBigInt.size - i] >= '0' && tmp[NewBigInt.size - i] <= '9')
 				NewBigInt.data[i] = tmp[NewBigInt.size - i];
 			else
 			{
-				delete[] NewBigInt.data;
+				if (NewBigInt.data) delete[] NewBigInt.data;
 				NewBigInt.data = nullptr;
 				NewBigInt.size = 0;
 				break;
@@ -145,18 +150,24 @@ std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 	{
 		NewBigInt.sign = true;
 		NewBigInt.data = new char[NewBigInt.size];
-		for (int i = 0; i < NewBigInt.size; ++i)
+		for (size_t i = 0; i < NewBigInt.size; ++i)
 		{
 			if (tmp[NewBigInt.size - 1 - i] >= '0' && tmp[NewBigInt.size - 1 - i] <= '9')
 				NewBigInt.data[i] = tmp[NewBigInt.size - 1 - i];
 			else
 			{
-				delete[] NewBigInt.data;
+				if (NewBigInt.data) delete[] NewBigInt.data;
 				NewBigInt.data = nullptr;
 				NewBigInt.size = 0;
 				break;
 			}
 		}
+	}
+	else
+	{
+		if (NewBigInt.data) delete[] NewBigInt.data;
+		NewBigInt.data = nullptr;
+		NewBigInt.size = 0;
 	}
 	return in;
 }
@@ -206,7 +217,10 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 			{
 				k = (data[i] - '0') - (second.data[i] - '0') + k;
 				if (k < 0)
+				{
 					tmp.data[i] = '0' + 10 + k;
+					k = -1;
+				}
 				else
 				{
 					tmp.data[i] = '0' + k;
@@ -218,7 +232,10 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 			{
 				k = (data[i] - '0') + k;
 				if (k < 0)
+				{
 					tmp.data[i] = '0' + 10 + k;
+					k = -1;
+				}
 				else
 				{
 					tmp.data[i] = '0' + k;
@@ -227,7 +244,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 			}
 			if (i == size)//delete 0
 			{
-				int j;
+				size_t j;
 				for (j = size - 1; j > 0 && tmp.data[j] == '0'; --j);
 
 				tmp.size = j + 1;
@@ -280,7 +297,10 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				{
 					k = -(data[i] - '0') + (second.data[i] - '0') + k;
 					if (k < 0)
+					{
 						tmp.data[i] = '0' + 10 + k;
+						k = -1;
+					}
 					else
 					{
 						tmp.data[i] = '0' + k;
@@ -291,7 +311,10 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				{
 					k = (second.data[i] - '0') + k;
 					if (k < 0)
+					{
 						tmp.data[i] = '0' + 10 + k;
+						k = -1;
+					}
 					else
 					{
 						tmp.data[i] = '0' + k;
@@ -301,7 +324,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 
 				if (i == second.size)//delete 0
 				{
-					int j;
+					size_t j;
 					for (j = second.size - 1; j > 0 && tmp.data[j] == '0'; --j);
 					tmp.size = j + 1;
 
@@ -324,7 +347,10 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				{
 					k = (data[i] - '0') - (second.data[i] - '0') + k;
 					if (k < 0)
+					{
 						tmp.data[i] = '0' + 10 + k;
+						k = -1;
+					}
 					else
 					{
 						tmp.data[i] = '0' + k;
@@ -336,7 +362,10 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				{
 					k = (data[i] - '0') + k;
 					if (k < 0)
+					{
 						tmp.data[i] = '0' + 10 + k;
+						k = -1;
+					}
 					else
 					{
 						tmp.data[i] = '0' + k;
@@ -345,7 +374,7 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				}
 				if (i == size)//delete 0
 				{
-					int j;
+					size_t j;
 					for (j = size - 1; j > 0 && tmp.data[j] == '0'; --j);
 
 					tmp.size = j + 1;
