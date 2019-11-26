@@ -53,18 +53,38 @@ int main()
 	assert(f == 42);
 
 	std::stringstream inp;
-	inp << "10000000000";
+	inp << "10000000000000";
 	inp >> f;
 	std::cout << "f = " << f << '\n';
 	
 	std::stringstream inp2;
 
-	inp2 << "-10000000001";
+	inp2 << "-10000000000001";
 	inp2 >> a;
 	std::cout << "a = " << a << '\n';
 	MyBigInt go = a + f;
 	std::cout << "a+f = " << a + f << " == -1" << '\n';
 	assert(a+f == -1);
+
+	MyBigInt g;//0
+	MyBigInt gg;//0
+	std::cout << "g = " << g << '\n';
+	inp2 >> g;//NULL
+	inp2 >> gg;//NULL
+	std::cout << "g = " << g << " == NULL" << '\n';
+	a = -g + 5 - (g + f);
+	std::cout << "a = " << a << " == -9999999999995" << '\n';
+	assert(g == gg);
+	assert(g > a);
+
+	MyBigInt ggg;//0
+	assert(ggg != g);//0!=NULL
+
+	g = a;
+	assert(g == a);
+
+	gg = a + 12356;
+	std::cout << "gg = " << gg << " == -9999999987639" << '\n';
 
 	std::cout << "Tests completed successfully!" << '\n';
 	system("pause");
