@@ -2,52 +2,6 @@
 #include <iostream>
 #include <string>
 
-struct Buffer
-{
-	explicit Buffer(size_t size) :
-		data_(new char[size])
-	{
-		if (!size) data_ = nullptr;
-	}
-	Buffer() :
-		data_(nullptr)
-	{
-	}
-	void copy(char* copied)
-	{
-		if (data_)
-			delete[] data_;
-		data_ = copied;
-	}
-	~Buffer()
-	{
-		if (data_)
-			delete[] data_;
-		data_ = nullptr;
-	}
-	char& operator[](const size_t& i)
-	{
-		return data_[i];
-	}
-	const char& operator[](const size_t& i) const
-	{
-		return data_[i];
-	}
-	void resize(size_t size)
-	{
-		if (data_)
-			delete[] data_;
-		if (!size) data_ = nullptr;
-		else
-			data_ = new char[size];
-	}
-	void lock()
-	{
-		data_ = nullptr;
-	}
-	char* data_;
-};
-
 class MyBigInt
 {
 public:
@@ -101,8 +55,51 @@ public:
 private:
 	size_t size;
 	bool sign;
-	//char* data;
+	struct Buffer
+	{
+		explicit Buffer(size_t size) :
+			data_(new char[size])
+		{
+			if (!size) data_ = nullptr;
+		}
+		Buffer() :
+			data_(nullptr)
+		{
+		}
+		void copy(char* copied)
+		{
+			if (data_)
+				delete[] data_;
+			data_ = copied;
+		}
+		~Buffer()
+		{
+			if (data_)
+				delete[] data_;
+			data_ = nullptr;
+		}
+		char& operator[](const size_t& i)
+		{
+			return data_[i];
+		}
+		const char& operator[](const size_t& i) const
+		{
+			return data_[i];
+		}
+		void resize(size_t size)
+		{
+			if (data_)
+				delete[] data_;
+			if (!size) data_ = nullptr;
+			else
+				data_ = new char[size];
+		}
+		void lock()
+		{
+			data_ = nullptr;
+		}
+		char* data_;
+	};
 	Buffer data;
-	//MyBigInt(const size_t& _size, const bool _sign, const size_t& len, const char* _data);
 	MyBigInt(const size_t& _size, const bool _sign, const size_t& len, const Buffer& _data);
 };
