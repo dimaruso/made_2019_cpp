@@ -1,10 +1,8 @@
 #include "MyBigInt.h"
 
-//MyBigInt::MyBigInt(const size_t& _size, const bool _sign, const size_t& len, const char* _data) :
 MyBigInt::MyBigInt(const size_t& _size, const bool _sign, const size_t& len, const Buffer& _data) :
 	size(_size),
 	sign(_sign),
-	//data(new char[_size])
 	data(_size)
 {
 	for (size_t i = 0; i < len && i < _size; ++i)
@@ -20,7 +18,6 @@ MyBigInt::MyBigInt(const size_t& _size, const bool _sign, const size_t& len, con
 MyBigInt::MyBigInt() :
 	size(1),
 	sign(true),
-	//data(new char('0'))
 	data(1)
 {
 	data[0] = '0';
@@ -32,7 +29,6 @@ MyBigInt::MyBigInt(const int& _data)
 	{
 		std::string tmp = std::to_string(_data);
 		size = tmp.length();
-		//data = new char[size];
 		data.resize(size);
 		for (size_t i = 0; i < size; ++i)
 		{
@@ -44,7 +40,6 @@ MyBigInt::MyBigInt(const int& _data)
 	{
 		std::string tmp = std::to_string(-_data);
 		size = tmp.length();
-		//data = new char[size];
 		data.resize(size);
 		for (size_t i = 0; i < size; ++i)
 		{
@@ -56,7 +51,6 @@ MyBigInt::MyBigInt(const int& _data)
 	{
 		sign = true;
 		size = 1;
-		//data = new char('0');
 		data.resize(size);
 		data[0] = '0';
 	}
@@ -65,7 +59,6 @@ MyBigInt::MyBigInt(const int& _data)
 MyBigInt::MyBigInt(const MyBigInt& copied) :
 	size(copied.size),
 	sign(copied.sign),
-	//data(new char[size])
 	data(size)
 {
 	for (size_t i = 0; i < size; ++i)
@@ -78,8 +71,6 @@ MyBigInt& MyBigInt::operator=(const MyBigInt& copied)
 {
 	size = copied.size;
 	sign = copied.sign;
-	//if (data) delete[] data;
-	//data = new char[size];
 	data.resize(size);
 	for (size_t i = 0; i < size; ++i)
 	{
@@ -93,8 +84,7 @@ MyBigInt::MyBigInt(MyBigInt&& moved) :
 	sign(moved.sign),
 	data(std::move(moved.data))
 {
-	//moved.data = nullptr;
-	moved.data.lock();//??????
+	moved.data.lock();
 	moved.size = 0;
 }
 
@@ -104,18 +94,14 @@ MyBigInt& MyBigInt::operator=(MyBigInt&& moved)
 		return *this;
 	size = moved.size;
 	sign = moved.sign;
-	//if (data) delete[] data;
 	data = std::move(moved.data);
-	//moved.data = nullptr;
-	moved.data.lock();//??????
+	moved.data.lock();
 	moved.size = 0;
 	return *this;
 }
 
 MyBigInt::~MyBigInt()
 {
-	//if (data) delete[] data;
-	//data = nullptr;
 	data.~Buffer();
 	size = 0;
 }
@@ -134,8 +120,6 @@ std::ostream& operator<<(std::ostream& out, const MyBigInt& printed)
 //scan
 std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 {
-	//if(NewBigInt.data) delete[] NewBigInt.data;
-	//NewBigInt.data = nullptr;
 	std::string tmp;
 	in >> tmp;
 	NewBigInt.size = tmp.length();
@@ -143,7 +127,6 @@ std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 	{
 		NewBigInt.sign = false;
 		--NewBigInt.size;
-		//NewBigInt.data = new char[];	
 		NewBigInt.data.resize(NewBigInt.size);
 		for (size_t i = 0; i < NewBigInt.size; ++i)
 		{
@@ -151,8 +134,6 @@ std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 				NewBigInt.data[i] = tmp[NewBigInt.size - i];
 			else
 			{
-				//if (NewBigInt.data) delete[] NewBigInt.data;
-				//NewBigInt.data = nullptr;
 				NewBigInt.data.~Buffer();
 				NewBigInt.size = 0;
 				break;
@@ -162,7 +143,6 @@ std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 	else if (tmp.length() > 0)
 	{
 		NewBigInt.sign = true;
-		//NewBigInt.data = new char[NewBigInt.size];
 		NewBigInt.data.resize(NewBigInt.size);
 		for (size_t i = 0; i < NewBigInt.size; ++i)
 		{
@@ -170,8 +150,6 @@ std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 				NewBigInt.data[i] = tmp[NewBigInt.size - 1 - i];
 			else
 			{
-				//if (NewBigInt.data) delete[] NewBigInt.data;
-				//NewBigInt.data = nullptr;
 				NewBigInt.data.~Buffer(); 
 				NewBigInt.size = 0;
 				break;
@@ -180,8 +158,6 @@ std::istream& operator >> (std::istream& in, MyBigInt& NewBigInt)
 	}
 	else
 	{
-		//if (NewBigInt.data) delete[] NewBigInt.data;
-		//NewBigInt.data = nullptr;
 		NewBigInt.data.~Buffer(); 
 		NewBigInt.size = 0;
 	}
@@ -194,7 +170,6 @@ MyBigInt const MyBigInt::operator-() const
 	if (tmp.size && tmp.data[tmp.size - 1] != '0') tmp.sign = !tmp.sign;
 	return tmp;
 }
-//////////////////////////////////////////////////
 //+
 const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 {
@@ -219,7 +194,6 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				for (i = 0; i < tmp.size-1; ++i)
 					newdata[i] = tmp.data[i];
 				--tmp.size;
-				//delete[] tmp.data;
 				tmp.data.copy(newdata);
 			}
 			return tmp;
@@ -267,8 +241,6 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				char* newdata = new char[tmp.size];
 				for (i = 0; i < tmp.size; ++i)
 					newdata[i] = tmp.data[i];
-
-				//delete[] tmp.data;
 				tmp.data.copy(newdata);
 			}
 			if (tmp.size == 1 && tmp.data[0] == '0')
@@ -296,7 +268,6 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 				for (i = 0; i < tmp.size-1; ++i)
 					newdata[i] = tmp.data[i];
 				--tmp.size;
-				//delete[] tmp.data;
 				tmp.data.copy(newdata);
 			}
 			return tmp;
@@ -347,7 +318,6 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 					char* newdata = new char[tmp.size];
 					for (i = 0; i < tmp.size; ++i)
 						newdata[i] = tmp.data[i];
-					//delete[] tmp.data;
 					tmp.data.copy(newdata);
 				}
 				if (tmp.size == 1 && tmp.data[0] == '0')
@@ -373,7 +343,6 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 						k = 0;
 					}
 				}
-
 				for (; i < size && k < 0; ++i)
 				{
 					k = (data[i] - '0') + k;
@@ -397,8 +366,6 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 					char* newdata = new char[tmp.size];
 					for (i = 0; i < tmp.size; ++i)
 						newdata[i] = tmp.data[i];
-
-					//delete[] tmp.data;
 					tmp.data.copy(newdata);
 				}
 				if (tmp.size == 1 && tmp.data[0] == '0')
@@ -407,9 +374,6 @@ const MyBigInt MyBigInt::operator+(const MyBigInt& second) const
 			}
 		}
 	}
-	
-
-
 }
 const MyBigInt MyBigInt::operator+(const int& second) const
 {
