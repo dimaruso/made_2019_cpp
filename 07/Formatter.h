@@ -11,7 +11,7 @@ public:
 	{
 		std::vector<std::string> Sargs;
 		process(Sargs, std::forward<ArgsT>(args)...);
-		return Calc(s, Sargs);
+		return format(s, Sargs);
 	}
 private:
 	//process uses variadic templates
@@ -32,5 +32,5 @@ private:
 		return;
 	}
 
-	const std::string Calc(const std::string& s, const std::vector<std::string>& _Sargs);
+	const std::string format(const std::string& s, const std::vector<std::string>& _Sargs);
 };
