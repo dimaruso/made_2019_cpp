@@ -13,11 +13,20 @@ int main()
 	bool b = 0;
 	std::string c = "42";
 
-	text = format("{0} / {0} + {2} = {1}", b, c, a);
+	text = format("{0} / {0} + {0002} = {1}", b, c, a);
 	assert(text == "0 / 0 + 1 = 42");
 
 	assert(format("{0}+{0} + {1} + 0*{2}={2}", 1, '2', 4) == "1+1 + 2 + 0*4=4");
 
+	std::cout << "Error test 0" << '\n';
+	try
+	{
+		text = format("{}+{1} = {0}", 2, "one");
+	}
+	catch (const std::runtime_error& error)
+	{
+		std::cout << error.what() << '\n';
+	}
 	std::cout << "Error test 1" << '\n';
 	try
 	{
