@@ -1,6 +1,6 @@
 #include "Formatter.h"
 
-const std::string Formatter::Calc(const std::string& s, const std::vector<std::string>& _Sargs)
+const std::string Formatter::format(const std::string& s, const std::vector<std::string>& _Sargs)
 {
 	std::string res;
 	std::string pos;
@@ -11,23 +11,16 @@ const std::string Formatter::Calc(const std::string& s, const std::vector<std::s
 		{
 			pos = "";
 			while (++i < s.size() && '0' <= s[i] && s[i] <= '9')
-				pos.push_back(s[i]);
+				pos+=s[i];
 			if (pos.empty() || s[i] != '}')
 				throw std::runtime_error("Can't be found '}'");
-			try
-			{
-				_pos = std::stoi(pos);
-			}
-			catch (...) 
-			{
-				throw std::runtime_error("Invalid position");
-			}
+			_pos = std::stoi(pos);
 			if (_pos >= _Sargs.size()) 
 				throw std::runtime_error("Arg position out of range");
 			res += _Sargs[_pos];
 		}
 		else if(s[i] != '}')
-			res.push_back(s[i]);
+			res+=s[i];
 		else
 			throw std::runtime_error("Wrong '}'");
 	}
