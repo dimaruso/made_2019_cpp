@@ -1,6 +1,6 @@
 #include "Formatter.h"
 
-const std::string Formatter::format(const std::string& s, const std::vector<std::string>& _Sargs)
+std::string Formatter::format(const std::string& s, const std::vector<std::string>& _Sargs)
 {
 	std::string res;
 	std::string pos;
