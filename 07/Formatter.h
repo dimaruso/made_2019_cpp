@@ -7,7 +7,7 @@ class Formatter
 {
 public:
 	template <class... ArgsT>
-	const std::string operator()(const std::string& s,ArgsT&&... args)
+	std::string operator()(const std::string& s,ArgsT&&... args)
 	{
 		std::vector<std::string> Sargs;
 		process(Sargs, std::forward<ArgsT>(args)...);
@@ -32,5 +32,5 @@ private:
 		return;
 	}
 
-	const std::string format(const std::string& s, const std::vector<std::string>& _Sargs);
+	std::string format(const std::string& s, const std::vector<std::string>& _Sargs);
 };
