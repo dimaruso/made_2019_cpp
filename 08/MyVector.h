@@ -190,7 +190,11 @@ template <class T, class Alloc>
 void MyVector<T, Alloc>::resize(size_type newSize)
 {
 	if (capacity_ < newSize)
+	{
 		extendData(newSize - capacity_);
+		for (size_type i = size_; i < newSize; ++i)
+			alloc_.construct(data + i, value_type());
+	}
 	else
 	{
 		for (size_type i = newSize; i < size_; ++i)
@@ -203,7 +207,7 @@ template <class T, class Alloc>
 void MyVector<T, Alloc>::resize(size_type newSize, const value_type& defaultValue)
 {
 	if (capacity_ < newSize)
-		extendData(newSize-capacity_);
+		extendData(newSize - capacity_);
 	else
 	{
 		for (size_type i = newSize; i < size_; ++i)
@@ -298,8 +302,6 @@ void MyVector<T, Alloc>::extendData(size_type newCapacity)
 		alloc_.construct(data + i, newData[i]);
 		alloc_.destroy(newData + i);
 	}
-	for (size_type i = size_; i < capacity_; ++i)
-		alloc_.construct(data + i, value_type());
 	alloc_.deallocate(newData, size_);
 }
 
