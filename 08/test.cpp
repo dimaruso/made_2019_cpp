@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <string>
 #include "MyVector.h"
 
 void testVoid()
@@ -83,6 +84,20 @@ void testDefVal()
 	assert(v[0] == 7);
 	assert(v[18] == 7);
 	assert(v[41] == 7);
+
+	MyVector<std::string> v2(111, "abacaba");
+	assert(v2.empty() == false);
+	assert(v2.size() == 111);
+	assert(v2.capacity() == 111);
+	assert(v2[0] == "abacaba");
+	assert(v2[18] == "abacaba");
+	assert(v2[110] == "abacaba");
+	v2[110] += "bada";
+	assert(v2[110] == "abacababada");
+	v2.resize(200);
+	assert(v2[110] == "abacababada");
+	v2[150] = "bada";
+	assert(v2[150] == "bada");
 }
 
 void testList()
