@@ -279,14 +279,28 @@ typename MyVector<T, Alloc>::const_reverse_iterator MyVector<T, Alloc>::crend() 
 template <class T, class Alloc>
 void MyVector<T, Alloc>::extendData(size_type newCapacity)
 {
-	value_type* newData;
+	size_type oldcapacity = capacity_;
 	if(capacity_ && 3* capacity_ <= 2*(newCapacity+capacity_)) capacity_ += newCapacity;
 	else if (capacity_ >= 4) capacity_ += capacity_ / 2;
 	else ++capacity_;
-	newData = alloc_.allocate(capacity_);
-	memcpy(newData, data, sizeof(value_type)*size_);
-	delete[] data;
-	data = newData;
+
+	value_type* newData = alloc_.allocate(size_);
+	
+	for (size_type i = 0; i < size_; ++i)
+	{
+		alloc_.construct(newData +i, data[i]);
+		alloc_.destroy(data + i);
+	}
+	alloc_.deallocate(data, oldcapacity);
+	data = alloc_.allocate(capacity_);
+	for (size_type i = 0; i < size_; ++i)
+	{
+		alloc_.construct(data + i, newData[i]);
+		alloc_.destroy(newData + i);
+	}
+	for (size_type i = size_; i < capacity_; ++i)
+		alloc_.construct(data + i, value_type());
+	alloc_.deallocate(newData, size_);
 }
 
 template <class T, class Alloc>
