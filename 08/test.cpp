@@ -10,26 +10,53 @@ void testVoid()
 	assert(v.size() == 0);
 
 	v.push_back(0);
-	assert(v.capacity() == 8);
+	assert(v.capacity() == 1);
 	assert(v.empty() == false);
 	assert(v.size() == 1); 
 	assert(v[0] == 0);
 
 	v.push_back(111);
 	v[1] = 77;
-	assert(v.capacity() == 8);
+	assert(v.capacity() == 2);
 	assert(v.empty() == false);
 	assert(v.size() == 2);
 	assert(v[0] == 0);
 	assert(v[1] == 77);
 
 	v.push_back(v[1]*2 + 10 + v[0]);
-	assert(v.capacity() == 8);
+	assert(v.capacity() == 3);
 	assert(v.empty() == false);
 	assert(v.size() == 3);
 	assert(v[0] == 0);
 	assert(v[1] == 77);
 	assert(v[2] == 164);
+	
+	v.push_back(1);
+	assert(v.capacity() == 4);
+	v.push_back(1);
+	assert(v.capacity() == 6);
+	v.push_back(1);
+	assert(v.capacity() == 6);
+	v.push_back(1);
+	assert(v.capacity() == 9);
+	assert(v.size() == 7);
+
+	v.push_back(1);
+	v.push_back(1);
+	v.push_back(1);
+	assert(v.capacity() == 13);
+	v.push_back(1);
+	v.push_back(1);
+	v.push_back(1);
+	v.push_back(1);
+	assert(v.capacity() == 19);
+	v.push_back(1);
+	v.push_back(1);
+	v.push_back(1);
+	v.push_back(1);
+	v.push_back(1);
+	v.push_back(1);
+	assert(v.capacity() == 28);
 }
 
 void testSize()
@@ -45,7 +72,6 @@ void testSize()
 	v.push_back(42);
 	assert(v.size() == 7);
 	assert(v[6] == 42);
-
 }
 
 void testDefVal()
@@ -57,7 +83,6 @@ void testDefVal()
 	assert(v[0] == 7);
 	assert(v[18] == 7);
 	assert(v[41] == 7);
-
 }
 
 void testList()
@@ -80,7 +105,7 @@ void testList()
 	v.push_back(11);
 	v.push_back(-1007);
 	assert(v.size() == 11);
-	assert(v.capacity() == 20);
+	assert(v.capacity() == 15);
 	assert(v[0] == 1);
 	assert(v[6] == 7);
 	assert(v[8] == 9);
@@ -160,9 +185,6 @@ void testIter()
 		assert(++k == i);
 
 	std::for_each(v.begin(), v.end(), [](int x) { std::cout << x << " ";});
-	std::cout << '\n';
-
-	std::for_each(v.cbegin(), v.cend(), [](int x) { std::cout << x << " "; });
 	std::cout << '\n';
 
 	std::for_each(v.cbegin(), v.cend(), [](int x) { std::cout << x << " "; });
