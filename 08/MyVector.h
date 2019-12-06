@@ -3,12 +3,7 @@
 #include <initializer_list>
 #include <algorithm>
 
-template <class T>
-class Allocator : public std::allocator<T>
-{
-};
-
-template <class T, class Alloc = Allocator<T>>
+template <class T, class Alloc = std::allocator<T>>
 class MyVector
 {
 
@@ -21,7 +16,7 @@ public:
 	using allocator_type = Alloc;
 
 	template <class TypeI>
-	class Iterator : public std::iterator<std::input_iterator_tag, TypeI>
+	class Iterator : public std::iterator<std::bidirectional_iterator_tag, TypeI>
 	{
 	public:
 		Iterator(TypeI* p);
@@ -120,7 +115,9 @@ MyVector<T, Alloc>::MyVector(std::initializer_list<value_type> init) :
 	capacity_(init.size()),
 	data(alloc_.allocate(init.size()))
 {
-	std::copy(init.begin(), init.end(), data);
+	size_type k = 0;
+	for (auto i : init)
+		alloc_.construct(data + k++, i);
 }
 
 template <class T, class Alloc>
@@ -157,18 +154,17 @@ template <class T, class Alloc>
 void MyVector<T, Alloc>::push_back(value_type&& value)
 {
 	if (capacity_ <= size_)
-		extendData(capacity_);
-	data[size_] = std::move(value);
-	++size_;
+		extendData(1);
+	alloc_.construct(data + size_++, value);
+	value = value_type();
 }
 
 template <class T, class Alloc>
 void MyVector<T, Alloc>::push_back(const value_type& value)
 {
 	if (capacity_ <= size_)
-		extendData(capacity_);
-	data[size_] = value;
-	++size_;
+		extendData(1);
+	alloc_.construct(data + size_++, value);
 }
 
 template <class T, class Alloc>
@@ -284,8 +280,9 @@ template <class T, class Alloc>
 void MyVector<T, Alloc>::extendData(size_type newCapacity)
 {
 	value_type* newData;
-	if(capacity_ > 0) capacity_ += newCapacity;
-	else capacity_ = 8;
+	if(capacity_ && 3* capacity_ <= 2*(newCapacity+capacity_)) capacity_ += newCapacity;
+	else if (capacity_ >= 4) capacity_ += capacity_ / 2;
+	else ++capacity_;
 	newData = alloc_.allocate(capacity_);
 	memcpy(newData, data, sizeof(value_type)*size_);
 	delete[] data;
