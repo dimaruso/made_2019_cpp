@@ -16,7 +16,7 @@ public:
 	using allocator_type = Alloc;
 
 	template <class TypeI>
-	class Iterator : public std::iterator<std::bidirectional_iterator_tag, TypeI>
+	class Iterator : public std::iterator<std::random_access_iterator_tag, TypeI>
 	{
 	public:
 		Iterator(TypeI* p);
@@ -116,7 +116,7 @@ MyVector<T, Alloc>::MyVector(std::initializer_list<value_type> init) :
 	data(alloc_.allocate(init.size()))
 {
 	size_type k = 0;
-	for (auto i : init)
+	for (auto& i : init)
 		alloc_.construct(data + k++, i);
 }
 
@@ -155,8 +155,7 @@ void MyVector<T, Alloc>::push_back(value_type&& value)
 {
 	if (capacity_ <= size_)
 		extendData(1);
-	alloc_.construct(data + size_++, value);
-	value = value_type();
+	alloc_.construct(data + size_++, std::move(value));
 }
 
 template <class T, class Alloc>
@@ -215,7 +214,7 @@ void MyVector<T, Alloc>::resize(size_type newSize, const value_type& defaultValu
 	}
 	size_ = newSize;
 	for (size_type i = 0; i < size_; ++i)
-		data[i] = defaultValue;
+		alloc_.construct(data + i, defaultValue);
 }
 
 template <class T, class Alloc>
