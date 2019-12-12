@@ -29,12 +29,12 @@ ThreadPool::ThreadPool(size_t _poolSize) :
 
 ThreadPool::~ThreadPool()
 {
-	{
-		std::unique_lock<std::mutex> lock(Lock);
-		stop = true;
-		poolSize = 0;
-	}
+	stop = true;
 	condition.notify_all();
 	for (std::thread &thread : threads)
 		thread.join();
+	{
+		std::unique_lock<std::mutex> lock(Lock);
+		poolSize = 0;
+	}
 }
